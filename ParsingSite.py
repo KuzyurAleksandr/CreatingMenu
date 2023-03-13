@@ -27,16 +27,25 @@ def prepare_groops():
         json.dump(dict_of_groops,file_json,indent=4,ensure_ascii=False)
 
 def handle_groops():
+    header = {'User - Agent': 'Mozilla / 5.0(Windows NT 10.0; Win64; x64; rv: 96.0) Gecko / 20100101  Firefox / 96.0'}
     with open('..\calorie_foods\dict_all_groops.json','r',encoding='utf-8') as file_json:
         dict_groops = json.load(file_json)
 
     not_needed_symbols = ["'"," ","-",","]
+    count = 0
     for groop_name, groop_href in dict_groops.items():
-        for symbol in not_needed_symbols:
-            if symbol in groop_name:
-                groop_name = groop_name.replace(symbol,"_")
+        if count == 0:
+            for symbol in not_needed_symbols:
+                if symbol in groop_name:
+                    groop_name = groop_name.replace(symbol,"_")
 
-        print(groop_name)
+            request = requests.get(groop_href, header)
+            src = request.text
+
+            with open(f'..\calorie_foods\data\\{count}_{groop_name}.html','w',encoding='utf-8') as file:
+                file.write(src)
+        count +=1
+
 
 def get_calorie_foods():
     #get_list_of_groops()
